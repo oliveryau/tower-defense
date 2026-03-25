@@ -24,12 +24,17 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        EnemyMovement();
+    }
+
+    private void EnemyMovement()
+    {
         // Move towards target position
         transform.position = Vector3.MoveTowards(transform.position, _targetPosition, data.speed * Time.deltaTime);
 
         // Set new target position when current target reached
         float relativeDistance = (transform.position - _targetPosition).magnitude;
-        if (relativeDistance < 0.01f) 
+        if (relativeDistance < 0.01f)
         {
             if (_currentWayPoint < _currentPath.Waypoints.Length - 1)
             {

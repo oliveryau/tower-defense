@@ -10,8 +10,6 @@ public class EnemySpawnData
 [CreateAssetMenu(fileName = "WaveData", menuName = "Scriptable Objects/WaveData")]
 public class WaveData : ScriptableObject
 {
-    //public EnemyType EnemyType;
     public EnemySpawnData[] enemies;
     public float spawnInterval;
-    //public int enemiesPerWave;
 }
