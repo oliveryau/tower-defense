@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    public static event Action<int> OnWaveChanged;
+
     [SerializeField] private WaveData[] waves;
     private int _currentWaveIndex = 0;
     private WaveData CurrentWave => waves[_currentWaveIndex];
@@ -40,6 +43,11 @@ public class Spawner : MonoBehaviour
         Enemy.onEnemyReachedEnd -= HandleEnemyReachedEnd;
     }
 
+    private void Start()
+    {
+        OnWaveChanged?.Invoke(_currentWaveIndex);
+    }
+
     private void Update()
     {
         if (_isBetweenWaves)
@@ -48,6 +56,7 @@ public class Spawner : MonoBehaviour
             if (_waveCooldown <= 0f) // buffer time before next wave
             {
                 _currentWaveIndex++;
+                if (_currentWaveIndex < waves.Length) OnWaveChanged?.Invoke(_currentWaveIndex); // update wave ui
                 _spawnTimer = 0f;
                 _spawnCounter = 0;
                 _enemiesRemoved = 0;
@@ -68,8 +77,7 @@ public class Spawner : MonoBehaviour
                 SpawnEnemy();
                 _spawnCounter++;
             }
-            else if (_spawnCounter >= CurrentWave.enemiesPerWave && _enemiesRemoved >=
-                CurrentWave.enemiesPerWave) // checking if full wave spawned and dead
+            else if (_spawnCounter >= CurrentWave.enemiesPerWave && _enemiesRemoved >= CurrentWave.enemiesPerWave) // checking if full wave spawned and dead
             {
                 _isBetweenWaves = true;
                 _waveCooldown = _timeBetweenWaves;

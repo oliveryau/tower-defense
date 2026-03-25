@@ -25,8 +25,7 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         // Move towards target position
-        transform.position = Vector3.MoveTowards(transform.position, _targetPosition,
-            data.speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, _targetPosition, data.speed * Time.deltaTime);
 
         // Set new target position when current target reached
         float relativeDistance = (transform.position - _targetPosition).magnitude;

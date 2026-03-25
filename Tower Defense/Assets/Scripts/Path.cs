@@ -19,8 +19,7 @@ public class Path : MonoBehaviour
                 if (i < Waypoints.Length - 1)
                 {
                     Gizmos.color = Color.gray;
-                    Gizmos.DrawLine(Waypoints[i].transform.position, Waypoints[i + 1].
-                        transform.position);
+                    Gizmos.DrawLine(Waypoints[i].transform.position, Waypoints[i + 1].transform.position);
                 }
             }
         }
