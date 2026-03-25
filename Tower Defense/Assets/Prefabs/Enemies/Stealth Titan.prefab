@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8669232299352490265}
   - component: {fileID: 1480042674006989652}
   m_Layer: 0
-  m_Name: Basic Enemy
+  m_Name: Stealth Titan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.3886792, g: 0.08140263, b: 0.08140263, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -97,4 +97,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccfdd2cf0bee5c34c9c2b29dc1e89dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  data: {fileID: 11400000, guid: 8a1b913d103a0d14eb62f39a5bbe627a, type: 2}

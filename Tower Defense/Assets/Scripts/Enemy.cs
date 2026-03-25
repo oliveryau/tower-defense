@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private EnemyData data;
+    public static event Action<EnemyData> onEnemyReachedEnd;
 
     private Vector3 _targetPosition;
     private int _currentWayPoint;
@@ -24,7 +26,7 @@ public class Enemy : MonoBehaviour
     {
         // Move towards target position
         transform.position = Vector3.MoveTowards(transform.position, _targetPosition,
-            moveSpeed * Time.deltaTime);
+            data.speed * Time.deltaTime);
 
         // Set new target position when current target reached
         float relativeDistance = (transform.position - _targetPosition).magnitude;
@@ -37,6 +39,7 @@ public class Enemy : MonoBehaviour
             }
             else
             {
+                onEnemyReachedEnd?.Invoke(data);
                 gameObject.SetActive(false);
             }
         }
