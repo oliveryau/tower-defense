@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable()
     {
+        _isRemoved = false;
         _currentWayPoint = 0;
         _targetPosition = _currentPath.GetPosition(_currentWayPoint);
         _health = data.health;
