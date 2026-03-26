@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274aed38ec6a0f54eb79881e17080d42, type: 3}
   m_Name: Beast
   m_EditorClassIdentifier: 
-  health: 1
+  health: 3
   damage: 1
   speed: 5
+  perks: 0
+  abilities: -1

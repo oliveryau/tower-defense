@@ -4,12 +4,17 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private EnemyData data;
-    public static event Action<EnemyData> onEnemyReachedEnd;
+    public EnemyData GetEnemyData() => data;
 
+    public static event Action<EnemyData> OnEnemyReachedEnd;
+    public static event Action<Enemy> OnEnemyDestroyed;
+    private bool _isRemoved = false;
+
+    private Path _currentPath;
     private Vector3 _targetPosition;
     private int _currentWayPoint;
 
-    private Path _currentPath;
+    private float _health;
 
     private void Awake()
     {
@@ -20,6 +25,7 @@ public class Enemy : MonoBehaviour
     {
         _currentWayPoint = 0;
         _targetPosition = _currentPath.GetPosition(_currentWayPoint);
+        _health = data.health;
     }
 
     private void Update()
@@ -29,10 +35,12 @@ public class Enemy : MonoBehaviour
 
     private void EnemyMovement()
     {
-        // Move towards target position
+        if (_isRemoved) return;
+
+        // move towards target position
         transform.position = Vector3.MoveTowards(transform.position, _targetPosition, data.speed * Time.deltaTime);
 
-        // Set new target position when current target reached
+        // set new target position when current target reached
         float relativeDistance = (transform.position - _targetPosition).magnitude;
         if (relativeDistance < 0.01f)
         {
@@ -43,9 +51,25 @@ public class Enemy : MonoBehaviour
             }
             else
             {
-                onEnemyReachedEnd?.Invoke(data);
+                _isRemoved = true;
+                OnEnemyReachedEnd?.Invoke(data);
                 gameObject.SetActive(false);
             }
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        if (_isRemoved) return;
+
+        _health -= damage;
+        _health = Math.Max(0, _health);
+
+        if (_health <= 0)
+        {
+            _isRemoved = true;
+            OnEnemyDestroyed?.Invoke(this);
+            gameObject.SetActive(false);
         }
     }
 }

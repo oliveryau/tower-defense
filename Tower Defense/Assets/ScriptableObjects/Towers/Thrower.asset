@@ -9,18 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b445c9adb0553c8499d685dc33c71cc9, type: 3}
-  m_Name: Wave1
+  m_Script: {fileID: 11500000, guid: 2a228e13bd5241a4493a87f5cab59b75, type: 3}
+  m_Name: Thrower
   m_EditorClassIdentifier: 
-  enemies:
-  - EnemyType: 0
-    count: 5
-  - EnemyType: 2
-    count: 1
-  - EnemyType: 0
-    count: 3
-  - EnemyType: 1
-    count: 2
-  - EnemyType: 0
-    count: 3
-  spawnInterval: 0.5
+  range: 1.5
+  shootInterval: 2
+  projectileSpeed: 5
+  projectileSize: 1
+  projectileDuration: 3
+  damage: 2
+  canHitPerks: 0

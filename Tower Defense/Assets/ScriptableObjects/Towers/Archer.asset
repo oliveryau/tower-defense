@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a228e13bd5241a4493a87f5cab59b75, type: 3}
   m_Name: Archer
   m_EditorClassIdentifier: 
-  range: 2
+  range: 2.5
   shootInterval: 1
   projectileSpeed: 10
+  projectileSize: 0.1
   projectileDuration: 2
   damage: 1
+  canHitPerks: 0
