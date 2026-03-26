@@ -70,6 +70,7 @@ public class Tower : MonoBehaviour
 
     private void Shoot()
     {
+        _enemiesInRange.RemoveAll(enemy => enemy == null || !enemy.gameObject.activeInHierarchy); // ensure tower doesn't keep shooting at deactivated enemy
         targetEnemy = GetTargetEnemy();
 
         if (targetEnemy != null)
