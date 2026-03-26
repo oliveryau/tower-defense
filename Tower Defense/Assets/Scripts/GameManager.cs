@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleEnemyReachedEnd(EnemyData data)
     {
-        _health = Mathf.Max(0, _health - data.damage);
+        _health = (int)Mathf.Max(0, _health - data.damage);
         OnHealthChanged?.Invoke(_health);
     }
 

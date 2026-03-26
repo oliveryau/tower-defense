@@ -36,12 +36,22 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    private bool CanDamageEnemy(EnemyData enemyData)
+    {
+        if (enemyData.HasPerk(EnemyPerks.Armored) && !_data.CanHitPerk(EnemyPerks.Armored))
+            return false; // cannot damage armored enemies
+
+        return true; // can damage enemies
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
             Enemy enemy = collision.GetComponent<Enemy>();
-            enemy.TakeDamage(_data.damage);
+            EnemyData enemyData = enemy.GetEnemyData();
+            float damage = CanDamageEnemy(enemyData) ? _data.damage : 0f;
+            enemy.TakeDamage(damage);
             gameObject.SetActive(false);
         }
     }

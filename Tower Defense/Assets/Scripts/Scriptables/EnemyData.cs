@@ -5,22 +5,22 @@ public enum EnemyPerks
 {
     Default = 0,
     Stealth = 1 << 0, // 0001
-    Armored = 1 << 1, // 0010
+    Armored = 1 << 1  // 0010
 }
 
 [System.Flags]
 public enum EnemyAbility
 {
     None = 0,
-    Split = 1 << 0, // 0001
-    Healing = 1 << 1, // 0010
+    Split = 1 << 0,
+    Healing = 1 << 1
 }
 
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Objects/EnemyData")]
 public class EnemyData : ScriptableObject
 {
     public float health;
-    public int damage;
+    public float damage;
     public float speed;
     public int manaReward;
 

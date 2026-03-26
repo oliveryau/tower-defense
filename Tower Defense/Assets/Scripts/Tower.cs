@@ -4,6 +4,7 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     [SerializeField] private TowerData data;
+    public TowerData GetTowerData() => data;
 
     private CircleCollider2D _circleCollider;
     private List<Enemy> _enemiesInRange;
@@ -71,12 +72,12 @@ public class Tower : MonoBehaviour
     {
         targetEnemy = GetTargetEnemy();
 
-        if (targetEnemy != null) // _enemiesInRange.Count > 0
+        if (targetEnemy != null)
         {
             GameObject projectile = _projectilePool.GetPooledObject();
             projectile.transform.position = transform.position;
             projectile.SetActive(true);
-            Vector2 _shootDirection = (targetEnemy.transform.position - transform.position).normalized; // _enemiesInRange[0]
+            Vector2 _shootDirection = (targetEnemy.transform.position - transform.position).normalized;
             projectile.GetComponent<Projectile>().Shoot(data, _shootDirection);
         }
     }
@@ -85,7 +86,7 @@ public class Tower : MonoBehaviour
     {
         foreach (Enemy enemy in _enemiesInRange)
         {
-            if (CanHitEnemy(enemy)) // checking if tower can hit enemy
+            if (CanSeeEnemy(enemy)) // checking if tower can see stealth enemies
             {
                 return enemy;
             }
@@ -93,17 +94,14 @@ public class Tower : MonoBehaviour
         return null; // no valid target if can't hit enemy
     }
 
-    private bool CanHitEnemy(Enemy enemy)
+    private bool CanSeeEnemy(Enemy enemy)
     {
         EnemyData enemyData = enemy.GetComponent<Enemy>().GetEnemyData();
 
         if (enemyData.HasPerk(EnemyPerks.Stealth) && !data.CanHitPerk(EnemyPerks.Stealth))
             return false; // cannot hit stealth enemies
 
-        if (enemyData.HasPerk(EnemyPerks.Armored) && !data.CanHitPerk(EnemyPerks.Armored))
-            return false; // cannot hit armored enemies
-
-        return true; // Tower can hit this enemy
+        return true; // Tower can see this enemy
     }
 
     private void HandleEnemyDestroyed(Enemy enemy)
