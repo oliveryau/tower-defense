@@ -2913,7 +2913,6 @@ MonoBehaviour:
   waveText: {fileID: 1829712156}
   healthText: {fileID: 444336702}
   manaText: {fileID: 687185082}
-  towerPanel: {fileID: 761938155}
 --- !u!1 &1877352983
 GameObject:
   m_ObjectHideFlags: 0

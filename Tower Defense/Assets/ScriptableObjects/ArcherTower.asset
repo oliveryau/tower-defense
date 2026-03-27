@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a73e5eb6197d24f4596b8cc9c687d7ee, type: 3}
+  m_Name: ArcherTower
+  m_EditorClassIdentifier: 
+  displayName: 
+  description: 
+  icon: {fileID: 0}
+  ChoiceType: 0
+  weight: 10
+  maxStacks: 1
+  towerData: {fileID: 11400000, guid: b6dfa17414afa3b4ba331f881f08625d, type: 2}
+  towerCapacity: 2
+  bonusDamage: 0
+  bonusRange: 0
+  bonusAttackSpeedPercent: 0

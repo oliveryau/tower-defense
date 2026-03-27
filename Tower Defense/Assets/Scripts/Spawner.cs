@@ -127,12 +127,12 @@ public class Spawner : MonoBehaviour
         {
             if (_spawnCounter < currentCount + enemySpawn.count)
             {
-                return enemySpawn.EnemyType; // gets enemy type here
+                return enemySpawn.enemyType; // gets enemy type here
             }
             currentCount += enemySpawn.count;
         }
 
-        return CurrentWave.enemies[0].EnemyType; // fallback, should not reach here
+        return CurrentWave.enemies[0].enemyType; // fallback, should not reach here
     }
 
     private void HandleEnemyReachedEnd(EnemyData data)
