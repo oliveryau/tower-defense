@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: AddThrowerTower
   m_EditorClassIdentifier: 
   id: 2
-  displayName: 
-  description: 
+  displayName: Unlock Throwers
+  description: Picks up rocks and throws it. Slow, attacks multiple targets.
   icon: {fileID: 0}
   ChoiceType: 0
   weight: 50
-  maxStacks: 3
+  maxStacks: 1
   towerData: {fileID: 11400000, guid: f4e022093c9db884b81f9fafd049c568, type: 2}
   towerCapacity: 2
   bonusDamage: 0

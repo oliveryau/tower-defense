@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: AddArcherTower
   m_EditorClassIdentifier: 
   id: 1
-  displayName: 
-  description: 
+  displayName: Unlock Archers
+  description: Trained with the bow and arrow. Fast, single-target.
   icon: {fileID: 0}
   ChoiceType: 0
   weight: 50
-  maxStacks: 3
+  maxStacks: 1
   towerData: {fileID: 11400000, guid: b6dfa17414afa3b4ba331f881f08625d, type: 2}
   towerCapacity: 2
   bonusDamage: 0

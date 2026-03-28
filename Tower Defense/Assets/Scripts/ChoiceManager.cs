@@ -9,8 +9,8 @@ public class ChoiceManager : MonoBehaviour
     public static event Action<bool> OnChoiceStateChanged; // open/close state (true=open, false=closed)
 
     [Header("Roll Settings")]
-    [SerializeField] private int choiceEveryNWaves = 3;
-    [SerializeField] private int optionsPerRoll = 3;
+    [SerializeField] private int choiceEveryNWaves;
+    [SerializeField] private int optionsPerRoll;
     [SerializeField] private List<ChoiceData> allChoices = new();
 
     private readonly Dictionary<string, int> _choiceStacks = new(); // tracks how many times each choice id has been picked
