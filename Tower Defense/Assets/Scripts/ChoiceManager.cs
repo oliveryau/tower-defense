@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq; // Gives LINQ helpers like Where, Any, Sum
+using System.Linq; // LINQ helpers - Where, Any, Sum
 using UnityEngine;
 
 public class ChoiceManager : MonoBehaviour
@@ -48,25 +48,14 @@ public class ChoiceManager : MonoBehaviour
         OnChoicesGenerated?.Invoke(options); // send rolled options to UI for display
     }
 
-    public void PickChoice(ChoiceData picked) // called by UI when player clicks choice
-    {
-        if (!_isChoiceOpen || picked == null) return;
-
-        ApplyChoice(picked);
-
-        _isChoiceOpen = false;
-        Time.timeScale = 1f;
-        OnChoiceStateChanged?.Invoke(false);
-    }
-
     private List<ChoiceData> GenerateOptions(int count)
     {
-        List<ChoiceData> candidates = allChoices.Where(IsChoiceValid).ToList(); // checking if choice is allowed
+        List<ChoiceData> candidates = allChoices.Where(IsOptionValid).ToList(); // checking if choice is allowed
         List<ChoiceData> result = new(); // to store final rolled choices
 
-        while (result.Count < count && candidates.Count > 0) // keep rolling until enough options or pool empty
+        while (result.Count < count && candidates.Count > 0)
         {
-            ChoiceData c = WeightedPick(candidates); // selects one choice using weighted randomness
+            ChoiceData c = CalculateOptionWeight(candidates); // selects one of the options using weighted randomness
             result.Add(c);
             candidates.Remove(c);
         }
@@ -74,7 +63,7 @@ public class ChoiceManager : MonoBehaviour
         return result; // return list for UI display
     }
 
-    private bool IsChoiceValid(ChoiceData choice)
+    private bool IsOptionValid(ChoiceData choice)
     {
         if (string.IsNullOrWhiteSpace(choice.id)) return false; // reject choices with empty id
 
@@ -94,7 +83,7 @@ public class ChoiceManager : MonoBehaviour
         return true; // choice passes all checks and can be included in roll pool
     }
 
-    private ChoiceData WeightedPick(List<ChoiceData> pool) 
+    private ChoiceData CalculateOptionWeight(List<ChoiceData> pool) 
     {
         int total = pool.Sum(c => Mathf.Max(1, c.weight)); // Sum all weights (minimum 1 each to avoid zero weight edge case)
         int roll = UnityEngine.Random.Range(0, total);
@@ -107,6 +96,17 @@ public class ChoiceManager : MonoBehaviour
         }
 
         return pool[0]; // fallback
+    }
+
+    public void PickChoice(ChoiceData picked) // called by UI when player clicks choice
+    {
+        if (!_isChoiceOpen || picked == null) return;
+
+        ApplyChoice(picked);
+
+        _isChoiceOpen = false;
+        Time.timeScale = 1f;
+        OnChoiceStateChanged?.Invoke(false);
     }
 
     private void ApplyChoice(ChoiceData choice)
