@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73e5eb6197d24f4596b8cc9c687d7ee, type: 3}
-  m_Name: ArcherTower
+  m_Name: AddThrowerTower
   m_EditorClassIdentifier: 
+  id: 2
   displayName: 
   description: 
   icon: {fileID: 0}
   ChoiceType: 0
-  weight: 10
-  maxStacks: 1
-  towerData: {fileID: 11400000, guid: b6dfa17414afa3b4ba331f881f08625d, type: 2}
+  weight: 50
+  maxStacks: 3
+  towerData: {fileID: 11400000, guid: f4e022093c9db884b81f9fafd049c568, type: 2}
   towerCapacity: 2
   bonusDamage: 0
   bonusRange: 0

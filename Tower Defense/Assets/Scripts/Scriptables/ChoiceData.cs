@@ -12,6 +12,7 @@ public enum ChoiceType
 public class ChoiceData : ScriptableObject
 {
     [Header("UI")]
+    public string id;
     public string displayName;
     [TextArea] public string description;
     public Sprite icon;
