@@ -29,7 +29,9 @@ public class UIController : MonoBehaviour
         GameManager.OnManaChanged += UpdateManaText;
 
         ChoiceManager.OnChoicesGenerated += ShowChoices;
-        ChoiceManager.OnChoiceStateChanged += HandleChoiceStateChanged;
+        ChoiceManager.OnChoicePhaseChanged += HandleChoicePhaseChanged;
+        ChoiceManager.OnTowerCapacityChanged += RefreshTowerButtons;
+
         if (choiceScreen != null) choiceScreen.SetActive(false);
     }
 
@@ -40,7 +42,8 @@ public class UIController : MonoBehaviour
         GameManager.OnManaChanged -= UpdateManaText;
 
         ChoiceManager.OnChoicesGenerated -= ShowChoices;
-        ChoiceManager.OnChoiceStateChanged -= HandleChoiceStateChanged;
+        ChoiceManager.OnChoicePhaseChanged -= HandleChoicePhaseChanged;
+        ChoiceManager.OnTowerCapacityChanged -= RefreshTowerButtons;
     }
 
     private void UpdateWaveText(int currentWave)
@@ -65,6 +68,7 @@ public class UIController : MonoBehaviour
             bool active = i < choices.Count;
             choiceButtons[i].gameObject.SetActive(active);
             if (!active) continue;
+
             ChoiceData c = choices[i];
             choiceTitles[i].text = c.displayName;
             choiceDescriptions[i].text = c.description;
@@ -74,8 +78,33 @@ public class UIController : MonoBehaviour
         }
     }
 
-    private void HandleChoiceStateChanged(bool open)
+    private void HandleChoicePhaseChanged(bool open)
     {
         if (choiceScreen != null) choiceScreen.SetActive(open);
+        if (!open) RefreshTowerButtons();
+    }
+
+    private void RefreshTowerButtons()
+    {
+        if (choiceManager == null) return;
+
+        List<TowerData> towers = choiceManager.GetTowersForButtons();
+        for (int i = 0; i < towerButtons.Length; i++)
+        {
+            bool show = i < towers.Count;
+            towerButtons[i].gameObject.SetActive(show);
+            if (!show) continue;
+
+            TowerData td = towers[i];
+            towerNames[i].text = td.GetDisplayName();
+            if (towerCapacityCount != null && i < towerCapacityCount.Length && towerCapacityCount[i] != null) towerCapacityCount[i].text = choiceManager.GetRemainingPlacements(td).ToString();
+            towerButtons[i].onClick.RemoveAllListeners();
+            TowerData captured = td;
+            //towerButtons[i].onClick.AddListener(() =>
+            //{
+            //    if (towerPlacer != null)
+            //        towerPlacer.SelectTower(captured);
+            //});
+        }
     }
 }

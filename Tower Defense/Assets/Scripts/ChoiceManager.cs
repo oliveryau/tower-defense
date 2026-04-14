@@ -5,16 +5,19 @@ using UnityEngine;
 
 public class ChoiceManager : MonoBehaviour
 {
+    public static event Action<bool> OnChoicePhaseChanged; // open/close state (true=open, false=closed)
     public static event Action<List<ChoiceData>> OnChoicesGenerated; // rolled choices to UI listeners
-    public static event Action<bool> OnChoiceStateChanged; // open/close state (true=open, false=closed)
+    public static event Action OnTowerCapacityChanged;
 
     [Header("Roll Settings")]
     [SerializeField] private int choiceEveryNWaves;
     [SerializeField] private int optionsPerRoll;
     [SerializeField] private List<ChoiceData> allChoices = new();
 
+    private readonly HashSet<TowerData> _unlockedTowers = new();
     private readonly Dictionary<string, int> _choiceStacks = new(); // tracks how many times each choice id has been picked
-    private readonly HashSet<TowerData> _unlockedTowers = new(); // tracks towers unlocked by tower unlocked choices
+    private readonly Dictionary<TowerData, int> _towerCapacityCount = new();
+    private readonly List<TowerData> _unlockOrder = new();
 
     private bool _isChoiceOpen = false;
 
@@ -32,7 +35,7 @@ public class ChoiceManager : MonoBehaviour
     {
         int waveNumber = waveIndexZeroBased + 1;
 
-        if (waveNumber % choiceEveryNWaves != 0) return; // do nothing if not a milestone wave
+        if (waveNumber % choiceEveryNWaves != 0) return;
         OpenChoicePhase();
     }
 
@@ -42,20 +45,20 @@ public class ChoiceManager : MonoBehaviour
 
         _isChoiceOpen = true;
         Time.timeScale = 0f;
-        OnChoiceStateChanged?.Invoke(true); // choice phase is now open
+        OnChoicePhaseChanged?.Invoke(true);
 
-        List<ChoiceData> options = GenerateOptions(optionsPerRoll); // roll options from valid weighted pool
-        OnChoicesGenerated?.Invoke(options); // send rolled options to UI for display
+        List<ChoiceData> options = GenerateOptions(optionsPerRoll);
+        OnChoicesGenerated?.Invoke(options);
     }
 
     private List<ChoiceData> GenerateOptions(int count)
     {
-        List<ChoiceData> candidates = allChoices.Where(IsOptionValid).ToList(); // checking if choice is allowed
-        List<ChoiceData> result = new(); // to store final rolled choices
+        List<ChoiceData> candidates = allChoices.Where(IsOptionValid).ToList(); // check if choice is allowed
+        List<ChoiceData> result = new();
 
         while (result.Count < count && candidates.Count > 0)
         {
-            ChoiceData c = CalculateOptionWeight(candidates); // selects one of the options using weighted randomness
+            ChoiceData c = CalculateOptionWeight(candidates); // selects one option using weighted randomness
             result.Add(c);
             candidates.Remove(c);
         }
@@ -65,16 +68,16 @@ public class ChoiceManager : MonoBehaviour
 
     private bool IsOptionValid(ChoiceData choice)
     {
-        if (string.IsNullOrWhiteSpace(choice.id)) return false; // reject choices with empty id
+        if (string.IsNullOrWhiteSpace(choice.id)) return false;
 
         int currentStacks = _choiceStacks.TryGetValue(choice.id, out int s) ? s : 0; // read current pick count for this id
         if (currentStacks >= choice.maxStacks) return false; // reject if already reached pick limit for this run
 
         if (choice.ChoiceType == ChoiceType.TowerUpgrade) // extra validation for tower upgrade choices
         {
-            if (choice.towerData == null) return false; // reject if upgrade has no target tower type configured
+            if (choice.towerData == null) return false;
 
-            Tower[] towers = FindObjectsByType<Tower>(FindObjectsSortMode.None); // get currently placed/active towers
+            Tower[] towers = FindObjectsByType<Tower>(FindObjectsSortMode.None); // get currently placed towers
             bool hasTargetTower = towers.Any(t => t.GetTowerData() == choice.towerData);
 
             if (!hasTargetTower) return false; // reject buff choice if player has no eligible tower
@@ -85,14 +88,14 @@ public class ChoiceManager : MonoBehaviour
 
     private ChoiceData CalculateOptionWeight(List<ChoiceData> pool) 
     {
-        int total = pool.Sum(c => Mathf.Max(1, c.weight)); // Sum all weights (minimum 1 each to avoid zero weight edge case)
+        int total = pool.Sum(c => Mathf.Max(1, c.weight)); // Sum all weights (minimum 1 each)
         int roll = UnityEngine.Random.Range(0, total);
         int running = 0;
 
         foreach (ChoiceData c in pool)
         {
             running += Mathf.Max(1, c.weight);
-            if (roll < running) return c; // if random roll falls into this choice's range, pick it
+            if (roll < running) return c;
         }
 
         return pool[0]; // fallback
@@ -106,7 +109,7 @@ public class ChoiceManager : MonoBehaviour
 
         _isChoiceOpen = false;
         Time.timeScale = 1f;
-        OnChoiceStateChanged?.Invoke(false);
+        OnChoicePhaseChanged?.Invoke(false);
     }
 
     private void ApplyChoice(ChoiceData choice)
@@ -116,12 +119,8 @@ public class ChoiceManager : MonoBehaviour
 
         switch (choice.ChoiceType)
         {
-            case ChoiceType.TowerCapacity: // unlock new tower
-                if (choice.towerData != null)
-                {
-                    _unlockedTowers.Add(choice.towerData);
-                    Debug.Log($"Unlocked tower: {choice.towerData.name}"); // Optional debug feedback in Console.
-                }
+            case ChoiceType.TowerCapacity: // unlock new tower + capacity
+                ApplyTowerCapacity(choice);
                 break;
 
             case ChoiceType.TowerUpgrade: // unlock new tower abilities
@@ -129,9 +128,69 @@ public class ChoiceManager : MonoBehaviour
                 break;
 
             case ChoiceType.HeroUpgrade: // placeholder
-                Debug.Log($"Hero upgrade picked: {choice.displayName}"); // Temporary log until hero system exists.
+                Debug.Log($"Hero upgrade picked: {choice.displayName}");
+                break;
+
+            case ChoiceType.HeroAbility:
+                Debug.Log($"Hero ability picked: {choice.displayName}");
                 break;
         }
+    }
+
+    private void ApplyTowerCapacity(ChoiceData choice)
+    {
+        if (choice.towerData == null) return;
+
+        _unlockedTowers.Add(choice.towerData);
+        if (!_unlockOrder.Contains(choice.towerData)) _unlockOrder.Add(choice.towerData);
+
+        int add = Mathf.Max(0, choice.towerCapacity);
+        if (add == 0) add = 1;
+
+        if (!_towerCapacityCount.ContainsKey(choice.towerData)) _towerCapacityCount[choice.towerData] = 0;
+
+        _towerCapacityCount[choice.towerData] += add;
+        OnTowerCapacityChanged?.Invoke();
+    }
+
+    public int GetTowerCapacityCount(TowerData data)
+    {
+        if (data == null) return 0;
+        return _towerCapacityCount.TryGetValue(data, out int n) ? n : 0;
+    }
+
+    public int GetPlacedCount(TowerData data)
+    {
+        if (data == null) return 0;
+        Tower[] towers = FindObjectsByType<Tower>(FindObjectsSortMode.None);
+        return towers.Count(t => t.GetTowerData() == data);
+    }
+
+    public bool DisplayTowerButtons(TowerData data) => IsTowerUnlocked(data) && GetRemainingPlacements(data) > 0;
+
+
+    public bool IsTowerUnlocked(TowerData data) => _unlockedTowers.Contains(data);
+
+    public int GetRemainingPlacements(TowerData data)
+    {
+        return Mathf.Max(0, GetTowerCapacityCount(data) - GetPlacedCount(data));
+    }
+
+    public void NotifyTowerPlacedOrRemoved()
+    {
+        OnTowerCapacityChanged?.Invoke();
+    }
+
+    public List<TowerData> GetTowersForButtons()
+    {
+        var list = new List<TowerData>();
+        foreach (TowerData td in _unlockOrder)
+        {
+            if (DisplayTowerButtons(td))
+                list.Add(td);
+        }
+        Debug.Log(list.Count);
+        return list;
     }
 
     private void ApplyTowerUpgrade(ChoiceData choice)
@@ -151,6 +210,4 @@ public class ChoiceManager : MonoBehaviour
 
         Debug.Log($"Applied buff to towers of type: {choice.towerData.name}"); // Optional debug confirmation.
     }
-
-    public bool IsTowerUnlocked(TowerData data) => _unlockedTowers.Contains(data); // Utility method for build/shop UI checks.
 }

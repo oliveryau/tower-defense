@@ -8,6 +8,14 @@ public enum ChoiceType
     HeroAbility  // future
 }
 
+public enum ChoiceRarity
+{
+    Normal,
+    Rare,
+    Epic,
+    Legend
+}
+
 [CreateAssetMenu(fileName = "ChoiceData", menuName = "Scriptable Objects/ChoiceData")]
 public class ChoiceData : ScriptableObject
 {
@@ -16,6 +24,7 @@ public class ChoiceData : ScriptableObject
     public string displayName;
     [TextArea] public string description;
     public Sprite icon;
+    public ChoiceRarity ChoiceRarity;
 
     [Header("Core")]
     public ChoiceType ChoiceType;
